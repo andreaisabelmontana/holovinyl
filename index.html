@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HoloVinyl — Built From Scratch</title>
+<meta name="description" content="An original from-scratch build of HoloVinyl: point a camera at a vinyl record and watch it come alive — computer vision recognises the sleeve and overlays an interactive visual experience on top." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --accent:#7c3aed; --accent-soft:#f1eafe; --ink:#1c1330; --muted:#5b5172;
+    --line:#e6ddf6; --bg:#fbf9ff; --card:#ffffff;
+    --serif:'Fraunces',Georgia,serif; --sans:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:0 28px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{font-family:var(--mono);font-size:.86em;background:var(--accent-soft);padding:.1em .4em;border-radius:4px;color:#6d28d9}
+  h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.15;letter-spacing:-.01em}
+  header.hero{padding:88px 0 56px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin:0 0 22px}
+  h1{font-size:clamp(2.6rem,6vw,4.1rem);margin:0 0 18px}
+  .lede{font-size:1.22rem;color:var(--muted);max-width:62ch;margin:0 0 28px}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;font-size:.82rem}
+  .chip{font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--muted);background:var(--card)}
+  section{padding:54px 0;border-bottom:1px solid var(--line)}
+  .kicker{font-family:var(--mono);font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+  h2{font-size:clamp(1.7rem,3.4vw,2.3rem);margin:0 0 20px}
+  h3{font-size:1.2rem;margin:0 0 6px}
+  p{margin:0 0 18px;max-width:68ch}
+  .muted{color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:8px}
+  .tool{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .tool .t{font-family:var(--mono);font-size:.78rem;color:var(--accent);letter-spacing:.04em;margin-bottom:8px}
+  .tool h3{font-size:1.05rem;font-family:var(--sans);font-weight:600;margin-bottom:6px}
+  .tool p{font-size:.92rem;color:var(--muted);margin:0}
+  ol.flow{counter-reset:s;list-style:none;padding:0;margin:24px 0 0}
+  ol.flow li{position:relative;padding:18px 0 18px 56px;border-top:1px solid var(--line)}
+  ol.flow li:before{counter-increment:s;content:counter(s,decimal-leading-zero);position:absolute;left:0;top:18px;font-family:var(--mono);font-size:.8rem;color:var(--accent);border:1px solid var(--line);border-radius:8px;width:38px;height:38px;display:grid;place-items:center;background:var(--card)}
+  ol.flow li h3{font-family:var(--sans);font-size:1.02rem;font-weight:600;margin:0 0 4px}
+  ol.flow li p{margin:0;font-size:.93rem;color:var(--muted)}
+  .callout{background:var(--accent-soft);border:1px solid #d8c8f6;border-radius:14px;padding:24px 26px;margin-top:8px}
+  .callout p:last-child{margin:0}
+  ul.learn{list-style:none;padding:0;margin:8px 0 0}
+  ul.learn li{padding:14px 0 14px 30px;border-top:1px solid var(--line);position:relative;color:var(--muted);max-width:68ch}
+  ul.learn li:before{content:"→";position:absolute;left:0;color:var(--accent);font-family:var(--mono)}
+  ul.learn li b{color:var(--ink);font-weight:600}
+  .price{display:flex;align-items:baseline;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 26px;margin-top:8px}
+  .price .n{font-family:var(--serif);font-size:2.6rem;color:var(--accent);line-height:1}
+  .price .l{color:var(--muted);font-size:.95rem}
+  footer{padding:48px 0 80px}
+  .credit{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px}
+  .credit .k{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  footer .fine{font-size:.8rem;color:var(--muted);margin-top:22px;text-align:center}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">From-Scratch Build · Computer Vision</p>
+    <h1>HoloVinyl</h1>
+    <p class="lede">Hold a record up to the camera and it stops being a flat sleeve — artwork lifts off it, the disc spins, visuals pulse in time. HoloVinyl recognises the album through the lens and overlays an interactive experience on top of it. I rebuilt it from scratch because it's augmented reality grounded in real computer vision: track the object first, then make magic on it.</p>
+    <div class="meta">
+      <span class="chip">Python / JS</span><span class="chip">OpenCV</span><span class="chip">Marker tracking</span>
+      <span class="chip">Homography</span><span class="chip">AR overlay</span><span class="chip">Pose estimation</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">What it is</p>
+    <h2>A record sleeve that comes alive</h2>
+    <p>The illusion is simple to describe and hard to earn: anything drawn on top of the record has to stick to it perfectly as it moves, tilts and rotates. If the overlay slides even slightly, the magic breaks. So before any visual flourish, HoloVinyl has to solve a pure vision problem — find the album in the frame and work out exactly how it's positioned in space.</p>
+    <p>Once that pose is known, the album cover becomes a canvas. The system can spin the disc, animate the artwork, or react to the music — all anchored to the physical object the camera is looking at. It's the same pipeline behind every convincing AR effect, built around a thing you can actually hold.</p>
+    <div class="price">
+      <div class="n">6 DOF</div>
+      <div class="l">the position and orientation of the record the system must recover every frame so the overlay stays glued to it.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">The stack</p>
+    <h2>From a sleeve in frame to an overlay on it</h2>
+    <p class="muted">Recognition and tracking first; the spectacle rides on top.</p>
+    <div class="grid">
+      <div class="tool"><div class="t">recognise</div><h3>Cover detection</h3><p>Identify the album in the camera feed by matching its distinctive artwork features.</p></div>
+      <div class="tool"><div class="t">geometry</div><h3>Homography</h3><p>Compute the transform that maps the known cover onto where it appears in the frame.</p></div>
+      <div class="tool"><div class="t">tracking</div><h3>Pose estimation</h3><p>Recover the record's position and tilt each frame so the overlay follows it smoothly.</p></div>
+      <div class="tool"><div class="t">render</div><h3>AR overlay</h3><p>Draw the spinning disc, animated art and effects, warped to sit exactly on the real surface.</p></div>
+      <div class="tool"><div class="t">interaction</div><h3>Live response</h3><p>Let the visuals react — to motion, to a tap, to the track — turning a static object interactive.</p></div>
+      <div class="tool"><div class="t">performance</div><h3>Real-time loop</h3><p>The whole thing has to run per frame, or the overlay lags behind the record and the spell breaks.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">Architecture</p>
+    <h2>How the magic stays glued on</h2>
+    <p>Every frame repeats the recognise-track-render cycle:</p>
+    <ol class="flow">
+      <li><h3>Capture</h3><p>Read the latest frame from the camera.</p></li>
+      <li><h3>Find the cover</h3><p>Match features to locate the album and confirm which record it is.</p></li>
+      <li><h3>Solve the pose</h3><p>Compute the homography and 3D pose of the sleeve in the frame.</p></li>
+      <li><h3>Render</h3><p>Warp the interactive visuals onto the cover's surface in correct perspective.</p></li>
+      <li><h3>Loop</h3><p>Repeat fast enough that the overlay tracks the record without visible lag.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">Reflection</p>
+    <h2>What rebuilding it taught me</h2>
+    <ul class="learn">
+      <li><b>AR is a tracking problem wearing a costume.</b> The visuals are the easy part; the believable part is knowing exactly where the object is, every frame.</li>
+      <li><b>Homographies are the bridge.</b> One matrix maps a known flat image to its place in the scene — and unlocks the entire overlay.</li>
+      <li><b>Jitter kills immersion.</b> A pose that wobbles frame to frame reads as fake instantly; smoothing the tracking is half the craft.</li>
+      <li><b>Feature matching has to be robust.</b> Glare, motion blur and partial occlusion are where naive recognition falls apart.</li>
+      <li><b>Latency is the experience.</b> A correct overlay that arrives a beat late still feels broken — real-time isn't optional here.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="credit">
+      <div class="k">About this build</div>
+      <p style="margin:0">An original, from-scratch build by <b>Andrea</b> — written to learn marker-based augmented reality and the vision underneath it: feature matching, homography estimation, object pose tracking and real-time overlay rendering. Plain HTML/CSS, deployed on GitHub Pages.</p>
+    </div>
+    <p class="fine">Built from scratch by Andrea · one of an ongoing series of learning builds.</p>
+  </div>
+</footer>
+</body>
+</html>
